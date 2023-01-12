@@ -1,0 +1,75 @@
+int forpin1 = 9;//forward pin 1
+int backpin1 = 8;//backward pin 1
+int forpin2 = 7;//forward pin 2
+int backpin2 = 6; //backward pin 2
+int echo = 4; 
+int trig = 5;
+int s2 = 11;
+int s1 = 3;
+int diodpin1 = 12; 
+int diodpin2 = 13;
+void setup() {
+  // put your setup code here, to run once:
+pinMode(forpin1,OUTPUT);
+pinMode(forpin2,OUTPUT);
+pinMode(backpin1,OUTPUT);
+pinMode(backpin2,OUTPUT);
+ pinMode(echo, INPUT);
+  pinMode(trig, OUTPUT);
+  pinMode(s1,OUTPUT);
+  pinMode(s2,OUTPUT);
+  pinMode(diodpin1,OUTPUT);
+  pinMode(diodpin2,OUTPUT);
+ Serial.begin(9600);
+}
+void Forward(int speedV,int forward,int backward,int speedPin, int diodpin){
+    //makes the RV go backward (something is wrong with the wiring and this was easier to fix)
+   digitalWrite(forward, HIGH);
+   digitalWrite(backward, LOW);
+   digitalWrite(speedPin, speedV);
+   digitalWrite(diodpin, LOW);
+}
+ 
+void Backward( int speedV,int forward,int backward,int speedPin, int diodpin){
+  //makes the RV go forward (something is wrong with the wiring and this was easier to fix)
+  digitalWrite(forward, LOW);
+   digitalWrite(backward, HIGH);
+   digitalWrite(speedPin, speedV);
+   digitalWrite(diodpin,HIGH);
+}
+void loop() {
+  // put your main code here, to run repeatedly:
+   digitalWrite(trig,LOW);
+  delayMicroseconds(2);
+  long Echoreading;
+  digitalWrite(trig,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig,LOW);
+  Echoreading = pulseIn(echo,HIGH);
+  int distance = Echoreading*0.034/2;
+  //this turns the echoreading into cm (I have no idea how it works)
+  Serial.print("Distance");
+  Serial.print(distance);
+  Serial.println("cm");
+  if(distance>15){
+ 
+Backward(122,forpin1,backpin1,s1,diodpin1);
+Backward(122,forpin2,backpin2,s2,diodpin2);
+  }else{
+    if(distance>10){
+Backward(0,forpin1,backpin1,s1,diodpin1);
+Backward(200,forpin2,backpin2,s2,diodpin2);
+}else{
+  if(distance>4){
+    while(distance<15){
+     Forward(0,forpin1,backpin1,s1,diodpin1);
+Forward(100,forpin2,backpin2,s2,diodpin2);
+  }else{
+  Forward(0,forpin1,backpin1,s1,diodpin1);
+Forward(0,forpin2,backpin2,s2,diodpin2);
+ 
+}
+  }
+}
+  }
+}
